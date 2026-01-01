@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Tree Felling | Engineering Arboreal Excellence</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        
+        /* Dark Mode Defaults */
+        .dark body { background-color: #020617; color: #ffffff; }
+        
+        /* Light Mode Defaults */
+        body:not(.dark) { background-color: #ffffff; color: #0f172a; }
+
+        /* --- Custom Animations --- */
+        @keyframes ken-burns {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+        .animate-ken-burns { animation: ken-burns 30s ease-in-out infinite; }
+
+        @keyframes text-glow {
+            0%, 100% { filter: drop-shadow(0 0 2px rgba(34, 197, 94, 0.3)); }
+            50% { filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.6)); }
+        }
+        .animate-text-glow { animation: text-glow 4s ease-in-out infinite; }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee { animation: marquee 40s linear infinite; }
+
+        @keyframes pulse-green {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+        .whatsapp-pulse { animation: pulse-green 2s infinite; }
+
+        .text-shimmer {
+            background: linear-gradient(to right, #22C55E 20%, #ffffff 40%, #ffffff 60%, #22C55E 80%);
+            background-size: 200% auto;
+            color: #22C55E;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShimmer 4s linear infinite;
+        }
+        @keyframes textShimmer { to { background-position: 200% center; } }
+
+        /* --- UI Components --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+        }
+        .dark .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+        
+        body:not(.dark) .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.17, 0.55, 0.55, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #22C55E; }
+
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #preloader.loaded {
+            opacity: 0;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body class="dark overflow-x-hidden">
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="relative w-24 h-24">
+            <div class="absolute inset-0 border-4 border-white/5 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-t-[#22C55E] rounded-full animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center font-black text-[10px] tracking-widest text-white uppercase">Arbor</div>
+        </div>
+    </div>
+
+    <!-- Video Background Layer -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden w-full h-full">
+        <video autoplay muted loop playsinline class="w-full h-full object-cover animate-ken-burns opacity-40">
+            <source src="background.mp4" type="video/mp4" />
+            <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80" alt="Backdrop Fallback" />
+        </video>
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/60 to-slate-950 z-10 dark:block hidden"></div>
+        <div class="absolute inset-0 bg-white/70 z-10 dark:hidden"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 py-4 transition-all duration-700 top-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex justify-between items-center px-4 sm:px-6 py-4 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-xl bg-slate-900/95 dark:bg-slate-900/95 bg-white/95">
+                <div class="flex items-center space-x-3 group cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                    <div class="w-10 h-10 bg-[#22C55E] rounded-lg flex items-center justify-center text-slate-950 font-black shadow-lg">MT</div>
+                    <div class="flex flex-col">
+                        <span class="font-black text-lg tracking-tighter uppercase leading-none dark:text-white text-slate-950">MARK <span class="text-[#22C55E]">FELLING</span></span>
+                        <span class="text-[8px] font-bold tracking-[0.4em] uppercase opacity-70 dark:text-white text-slate-950">Arboreal Integrity</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="#" class="text-[10px] font-black uppercase tracking-widest hover:text-[#22C55E] transition-colors dark:text-white text-slate-950">Home</a>
+                    <a href="#services" class="text-[10px] font-black uppercase tracking-widest hover:text-[#22C55E] transition-colors dark:text-white text-slate-950">Services</a>
+                    <a href="#about" class="text-[10px] font-black uppercase tracking-widest hover:text-[#22C55E] transition-colors dark:text-white text-slate-950">About Us</a>
+                    <a href="#contact-section" class="text-[10px] font-black uppercase tracking-widest hover:text-[#22C55E] transition-colors dark:text-white text-slate-950">Contacts</a>
+                    
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="p-2 rounded-xl glass-card border-none hover:bg-[#22C55E]/20 transition-all" aria-label="Toggle theme">
+                        <i data-lucide="sun" id="sun-icon" class="hidden dark:block text-[#22C55E]"></i>
+                        <i data-lucide="moon" id="moon-icon" class="block dark:hidden text-slate-950"></i>
+                    </button>
+
+                    <a href="tel:0698214735" class="px-6 py-3 bg-[#22C55E] text-slate-950 rounded-xl font-bold hover:brightness-110 transition-all shadow-lg uppercase text-[10px] tracking-widest active:scale-95">Dispatch: 069 821 4735</a>
+                </div>
+                
+                <div class="lg:hidden flex items-center space-x-4">
+                    <button id="theme-toggle-mobile" class="p-2 rounded-xl glass-card border-none" aria-label="Toggle theme">
+                        <i data-lucide="sun" class="hidden dark:block text-[#22C55E]"></i>
+                        <i data-lucide="moon" class="block dark:hidden text-slate-950"></i>
+                    </button>
+                    <button id="menu-toggle" class="dark:text-white text-slate-900 p-2" aria-label="Toggle menu">
+                        <i data-lucide="menu" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden absolute top-24 left-4 right-4 dark:bg-slate-900 bg-white border border-white/10 rounded-2xl p-6 shadow-2xl lg:hidden">
+            <div class="flex flex-col space-y-6">
+                <a href="#" class="mobile-link text-xs font-black uppercase tracking-widest dark:text-white text-slate-950">Home</a>
+                <a href="#services" class="mobile-link text-xs font-black uppercase tracking-widest dark:text-white text-slate-950">Services</a>
+                <a href="#about" class="mobile-link text-xs font-black uppercase tracking-widest dark:text-white text-slate-950">About Us</a>
+                <a href="#contact-section" class="mobile-link text-xs font-black uppercase tracking-widest dark:text-white text-slate-950">Contacts</a>
+                <a href="tel:0698214735" class="bg-[#22C55E] text-slate-950 py-4 rounded-xl font-black text-center uppercase text-xs tracking-widest">Call Emergency Unit</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center pt-24 overflow-hidden relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-8 text-center lg:text-left reveal">
+                <div class="inline-flex items-center space-x-2 px-4 py-2 bg-[#22C55E]/10 border border-[#22C55E]/20 rounded-full">
+                    <span class="w-2 h-2 bg-[#22C55E] rounded-full animate-pulse"></span>
+                    <span class="text-[#22C55E] text-[10px] font-black uppercase tracking-[0.3em]">South Africa's Premier Site Clearance</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-black leading-[0.9] tracking-tighter uppercase dark:text-white text-slate-900">
+                    Engineering <br />
+                    <span class="text-shimmer animate-text-glow">Arboreal</span> <br />
+                    Excellence.
+                </h1>
+                
+                <p class="text-lg md:text-xl max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed dark:text-slate-400 text-slate-600">
+                    Mark Tree Felling specializes in high-risk structural tree removal—from residential aesthetics to industrial site restoration. We manage the environmental integrity your property deserves.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-6">
+                    <a href="tel:0698214735" class="px-10 py-5 bg-[#22C55E] text-slate-950 font-black rounded-2xl shadow-2xl hover:scale-105 transition-all flex items-center justify-center uppercase tracking-widest text-xs">
+                        Call Now <i data-lucide="phone" class="ml-3 w-4 h-4"></i>
+                    </a>
+                    <a href="https://wa.me/27698214735" class="px-10 py-5 glass-card font-black rounded-2xl border border-white/10 transition-all uppercase tracking-widest text-xs flex items-center justify-center hover:bg-white/5 active:scale-95 dark:text-white text-slate-950">
+                        WhatsApp Us
+                    </a>
+                </div>
+            </div>
+
+            <div class="hidden lg:block relative reveal" style="transition-delay: 200ms;">
+                <div class="relative z-10 rounded-[3.5rem] overflow-hidden shadow-2xl border border-white/10 transform rotate-3 hover:rotate-0 transition-all duration-1000 aspect-square group">
+                    <img src="https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=800&q=80" alt="Artisan Arborist" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4000ms]" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
+                    <div class="absolute bottom-8 left-8 right-8">
+                         <p class="text-2xl font-black uppercase tracking-tighter text-white">Structural Felling</p>
+                         <p class="text-xs text-[#22C55E] font-bold uppercase tracking-widest">Safety Standard Certified</p>
+                    </div>
+                </div>
+                <div class="absolute -top-10 -right-10 w-64 h-64 bg-[#22C55E]/10 blur-[100px] rounded-full"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Corporate Profile -->
+    <section id="about" class="py-32 relative overflow-hidden bg-slate-950/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal space-y-8">
+                    <div class="space-y-4">
+                        <h2 class="text-[#22C55E] font-black uppercase tracking-[0.4em] text-[11px]">The Artisan Standard</h2>
+                        <h3 class="text-5xl font-black uppercase tracking-tighter dark:text-white text-slate-950">Integrity In Every Controlled Fall.</h3>
+                        <div class="w-24 h-2 bg-[#22C55E] rounded-full opacity-50"></div>
+                    </div>
+                    <div class="space-y-6 dark:text-slate-400 text-slate-600 font-medium leading-relaxed">
+                        <p>Mark Tree Felling has established itself as a premier multidisciplinary site restoration partner in South Africa. We operate on a core philosophy: that every tree removal project deserves uncompromising artisan safety.</p>
+                        <p>Our company specializes in bridging the gap between meticulous garden aesthetics and heavy-duty industrial clearance. We manage the entire structural risk of the project, ensuring every branch and trunk is handled with surgical precision across residential, commercial, and industrial projects.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6 pt-4">
+                        <div class="p-6 glass-card rounded-3xl border-l-4 border-[#22C55E]">
+                           <i data-lucide="shield-check" class="text-[#22C55E] mb-2 w-6 h-6"></i>
+                           <h4 class="font-black uppercase text-[10px] tracking-widest text-slate-900 dark:text-white">Safety First</h4>
+                        </div>
+                        <div class="p-6 glass-card rounded-3xl border-l-4 border-blue-500">
+                           <i data-lucide="zap" class="text-blue-500 mb-2 w-6 h-6"></i>
+                           <h4 class="font-black uppercase text-[10px] tracking-widest text-slate-900 dark:text-white">Expert Team</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative hidden lg:block reveal" style="transition-delay: 300ms;">
+                    <img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=800&q=80" alt="Arbor work" class="rounded-[3rem] shadow-2xl grayscale hover:grayscale-0 transition-all duration-1000" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Grid -->
+    <section id="services" class="py-32 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="text-center space-y-4 mb-24 reveal">
+                <h2 class="text-[#22C55E] font-black tracking-[0.4em] uppercase text-[11px]">Technical Infrastructure</h2>
+                <h3 class="text-4xl md:text-5xl font-black tracking-tighter uppercase leading-tight dark:text-white text-slate-900">Strategic Services</h3>
+                <div class="w-24 h-2 bg-[#22C55E] mx-auto rounded-full mt-4 opacity-50"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="services-container">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- The Protocol (Process) -->
+    <section id="process" class="py-32 relative bg-slate-950/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                <div class="space-y-12 reveal">
+                   <div class="space-y-4 text-center lg:text-left">
+                      <h2 class="text-[#22C55E] font-black uppercase tracking-[0.4em] text-[11px]">Workflow Methodology</h2>
+                      <h3 class="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none dark:text-white text-slate-950">The Arboreal <br /> Recovery Process.</h3>
+                   </div>
+                   
+                   <div class="space-y-8" id="process-steps">
+                      <!-- Populated via JS -->
+                   </div>
+                </div>
+                <div class="glass-card p-12 rounded-[3.5rem] reveal">
+                    <p class="text-lg font-medium dark:text-slate-300 text-slate-600 italic leading-relaxed">"We don't just cut wood. We manage kinetic energy. Our protocol ensures that even the most complex removals are executed without structural interference."</p>
+                    <div class="flex items-center gap-4 border-t border-white/10 pt-8 mt-8">
+                         <div class="w-12 h-12 bg-[#22C55E] rounded-full flex items-center justify-center font-black text-[#020617]">MT</div>
+                         <div>
+                            <p class="font-black text-xs uppercase dark:text-white text-slate-900">Lead Operations Unit</p>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Mark Tree Felling</p>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-32 relative reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <h2 class="text-[#22C55E] font-black tracking-[0.4em] uppercase text-[11px] mb-4 text-center">Verified Dispatch Logs</h2>
+            <h3 class="text-5xl font-black uppercase tracking-tighter mb-16 text-center dark:text-white text-slate-950">Client Testimonials.</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="testimonial-container">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-32 relative reveal">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6">
+            <h2 class="text-[#22C55E] font-black tracking-[0.4em] uppercase text-[11px] mb-4 text-center">Technical Knowledge Base</h2>
+            <h3 class="text-5xl font-black uppercase tracking-tighter mb-16 text-center dark:text-white text-slate-950">Common Enquiries.</h3>
+            
+            <div class="space-y-4" id="faq-container">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact-section" class="py-32 relative reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                <div class="space-y-12 text-center lg:text-left">
+                    <h3 class="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-[0.8] dark:text-white text-slate-900">
+                        Clear <br />
+                        <span class="text-[#22C55E] text-shimmer animate-text-glow">The View.</span> <br />
+                        Properly.
+                    </h3>
+                    <div class="space-y-10 text-left max-w-md mx-auto lg:mx-0 pt-10">
+                        <div class="flex items-center space-x-6 group cursor-pointer" onclick="location.href='tel:0698214735'">
+                            <div class="w-16 h-16 glass-card rounded-2xl flex items-center justify-center text-[#22C55E] group-hover:bg-[#22C55E] group-hover:text-slate-950 transition-all shadow-xl">
+                                <i data-lucide="phone"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black uppercase mb-1 text-slate-500">Emergency Hotline</p>
+                                <p class="text-2xl font-black leading-none dark:text-white text-slate-900">069 821 4735</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-8 sm:p-12 rounded-[2.5rem] shadow-2xl">
+                    <form class="space-y-6" onsubmit="event.preventDefault();">
+                        <h4 class="text-3xl font-black mb-8 uppercase tracking-tighter dark:text-white text-slate-900">Secure Assessment</h4>
+                        <input type="text" placeholder="Client Name" class="w-full glass-card bg-white/5 border-none rounded-xl p-5 outline-none focus:ring-2 focus:ring-[#22C55E] dark:text-white text-slate-900" required />
+                        <input type="tel" placeholder="Contact Protocol" class="w-full glass-card bg-white/5 border-none rounded-xl p-5 outline-none focus:ring-2 focus:ring-[#22C55E] dark:text-white text-slate-900" required />
+                        <button class="w-full bg-[#22C55E] text-slate-950 font-black py-6 rounded-2xl shadow-2xl hover:brightness-110 transition-all uppercase tracking-[0.3em] text-[10px]">Transmit Request</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 bg-slate-950/90 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+            <div class="flex items-center justify-center space-x-3 mb-8">
+                <div class="w-10 h-10 bg-[#22C55E] rounded-lg flex items-center justify-center text-slate-950 font-black">MT</div>
+                <h4 class="text-xl font-black tracking-tighter uppercase text-white">MARK TREE FELLING</h4>
+            </div>
+            <p class="text-sm font-medium opacity-50 text-white">© 2026 MARK TREE FELLING. ALL RIGHTS RESERVED.</p>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/27698214735" class="fixed bottom-8 right-8 z-[100] bg-[#22C55E] text-slate-950 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all whatsapp-pulse" id="floating-wa">
+    </a>
+
+    <script>
+        // WhatsApp SVG
+        const waSvg = `<svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.446 4.432-9.877 9.888-9.877 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.881-9.886 9.881zM21.158 2.808A11.087 11.087 0 0012.046 0C5.435 0 .058 5.377.056 11.99c0 2.112.551 4.174 1.598 6.01L0 24l6.15-1.613a11.047 11.047 0 005.89 1.666h.005c6.612 0 11.987-5.379 11.99-11.99a11.044 11.044 0 00-3.282-7.882z" /></svg>`;
+        document.getElementById('floating-wa').innerHTML = waSvg;
+
+        // Theme Toggle Logic
+        const themeToggles = [document.getElementById('theme-toggle'), document.getElementById('theme-toggle-mobile')];
+        themeToggles.forEach(btn => {
+            btn.onclick = () => {
+                document.body.classList.toggle('dark');
+                lucide.createIcons();
+            };
+        });
+
+        // Data Models
+        const services = [
+            { title: "High-Risk Felling", icon: "shield-alert", desc: "Safe removal of dangerous, large, or precariously leaning trees near structures.", bullets: ["Structural Risk Analysis", "Advanced Rigging"] },
+            { title: "Stump Extraction", icon: "mountain", desc: "Complete grinding and clearing of old tree stumps to leave your landscape flat.", bullets: ["Deep Root Grinding", "Soil Leveling"] },
+            { title: "Tree Grooming", icon: "scissors", desc: "Strategic trimming and pruning to maintain healthy trees and neat landscapes.", bullets: ["Crown Reduction", "Deadwood Removal"] },
+            { title: "Palm Maintenance", icon: "palmtree", desc: "Specialized care for palm trees including cutting and cleaning dead fronds.", bullets: ["Climbing Specialists", "Debris Removal"] },
+            { title: "Site Clearance", icon: "truck", desc: "Clearing large plots of overgrown vegetation and bush for new developments.", bullets: ["Mass Vegetation Removal", "SANS Compliance"] },
+            { title: "Landscaping & Compost", icon: "leaf", desc: "Supplying high-quality organic compost to improve soil for gardens.", bullets: ["Organic Soil Solutions", "Site Preparation"] }
+        ];
+
+        const testimonials = [
+            { name: "Thabo M.", loc: "Johannesburg", txt: "Mark Tree Felling cleared our backyard in one day. Very professional and reliable. Highly recommended!" },
+            { name: "Nomsa P.", loc: "Pretoria", txt: "Great service! The team removed a huge palm tree safely. Friendly and skilled." },
+            { name: "Sipho K.", loc: "Durban", txt: "They trimmed all our trees and ground the stumps quickly. Excellent value!" },
+            { name: "Lerato S.", loc: "Cape Town", txt: "Quick response, safe work, and left the site clean. Definitely using them again." }
+        ];
+
+        const steps = [
+            { n: "01", t: "Hazard Audit", d: "A 24-point visual assessment identifying root cause of hazards and center of gravity." },
+            { n: "02", t: "Technical Rigging", d: "Deployment of high-tensile safety lines to manage directional force during the cut." },
+            { n: "03", t: "Controlled Felling", d: "Executing precision mechanical cuts to ensure a safe and predictable descent." },
+            { n: "04", t: "Bio-Waste Clearance", d: "Complete extraction of debris and final surface leveling of the site." }
+        ];
+
+        const faqs = [
+            { q: "Do you handle high-risk trees?", a: "Yes, we specialize in high-risk removals. Our team is trained to safely dismantle large trees that are close to buildings or power lines." },
+            { q: "Do you remove and grind stumps?", a: "Absolutely. We offer full stump removal and grinding services. We can grind stumps below surface level so you can replant over the area." },
+            { q: "Do you clean palm trees?", a: "Yes, palm tree maintenance is one of our regular services. We remove dead fronds and seeds to keep your garden neat." },
+            { q: "Do you do full site and bush clearance?", a: "We provide comprehensive site clearance for both residential yards and large commercial plots, removing all overgrown vegetation." },
+            { q: "How do I get a quote?", a: "You can call us directly or send a WhatsApp message to 069 821 4735. We often provide on-site assessments for accurate pricing." }
+        ];
+
+        // Loading and Initialization Function
+        function initializeApp() {
+            const loader = document.getElementById('preloader');
+            if (loader.classList.contains('loaded')) return;
+
+            lucide.createIcons();
+            
+            // Populate Services
+            const sCont = document.getElementById('services-container');
+            if(sCont.children.length === 0) {
+                services.forEach(s => {
+                    const card = document.createElement('div');
+                    card.className = 'glass-card p-10 rounded-[2.5rem] group flex flex-col border-l-4 border-l-[#22C55E] reveal';
+                    card.innerHTML = `
+                        <div class="w-16 h-16 bg-[#22C55E] rounded-2xl flex items-center justify-center mb-8 text-slate-950 group-hover:rotate-12 transition-transform shadow-xl">
+                            <i data-lucide="${s.icon}"></i>
+                        </div>
+                        <h4 class="text-2xl font-black mb-4 uppercase tracking-tighter dark:text-white text-slate-900">${s.title}</h4>
+                        <p class="mb-8 text-sm font-medium opacity-70 leading-relaxed flex-grow dark:text-slate-400 text-slate-600">${s.desc}</p>
+                        <div class="space-y-2 mb-8 border-t border-white/5 pt-6">
+                            ${s.bullets.map(b => `<div class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest dark:text-white text-slate-900"><div class="w-1.5 h-1.5 bg-[#22C55E] rounded-full"></div> ${b}</div>`).join('')}
+                        </div>
+                    `;
+                    sCont.appendChild(card);
+                });
+            }
+
+            // Populate Steps
+            const pCont = document.getElementById('process-steps');
+            if(pCont.children.length === 0) {
+                steps.forEach(st => {
+                    const item = document.createElement('div');
+                    item.className = 'flex gap-6 group';
+                    item.innerHTML = `
+                        <div class="text-4xl font-black text-white/10 group-hover:text-[#22C55E]/40 transition-colors duration-500">${st.n}</div>
+                        <div class="space-y-2">
+                            <h4 class="text-xl font-black uppercase tracking-tighter dark:text-white text-slate-900">${st.t}</h4>
+                            <p class="text-sm dark:text-slate-400 text-slate-600 font-medium leading-relaxed">${st.d}</p>
+                        </div>
+                    `;
+                    pCont.appendChild(item);
+                });
+            }
+
+            // Populate Testimonials
+            const tCont = document.getElementById('testimonial-container');
+            if(tCont.children.length === 0) {
+                testimonials.forEach(t => {
+                    const card = document.createElement('div');
+                    card.className = 'glass-card p-8 rounded-3xl relative flex flex-col';
+                    card.innerHTML = `
+                        <i data-lucide="quote" class="text-[#22C55E] opacity-20 mb-4"></i>
+                        <p class="text-sm dark:text-slate-300 text-slate-600 italic mb-6">"${t.txt}"</p>
+                        <div class="mt-auto">
+                            <p class="font-black text-xs uppercase dark:text-white text-slate-900">${t.name}</p>
+                            <p class="text-[10px] text-[#22C55E] font-bold uppercase tracking-widest">${t.loc}</p>
+                        </div>
+                    `;
+                    tCont.appendChild(card);
+                });
+            }
+
+            // Populate FAQ
+            const fCont = document.getElementById('faq-container');
+            if(fCont.children.length === 0) {
+                faqs.forEach((f, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'glass-card rounded-2xl overflow-hidden';
+                    item.innerHTML = `
+                        <button class="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors faq-btn" data-idx="${idx}">
+                            <span class="font-black text-xs uppercase tracking-widest dark:text-white text-slate-900">${f.q}</span>
+                            <div class="faq-icon transition-transform duration-500"><i data-lucide="x" class="text-[#22C55E] w-4 h-4 rotate-45"></i></div>
+                        </button>
+                        <div class="faq-content overflow-hidden max-h-0 transition-all duration-500 opacity-0 px-6 pb-6 text-sm font-medium dark:text-slate-400 text-slate-600 border-t border-white/5 pt-4">
+                            ${f.a}
+                        </div>
+                    `;
+                    fCont.appendChild(item);
+                });
+            }
+
+            lucide.createIcons();
+
+            // FAQ Logic
+            document.querySelectorAll('.faq-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const content = btn.nextElementSibling;
+                    const icon = btn.querySelector('.faq-icon');
+                    const isOpen = content.classList.contains('active-faq');
+                    document.querySelectorAll('.faq-content').forEach(c => {
+                        c.classList.remove('active-faq');
+                        c.style.maxHeight = '0px';
+                        c.style.opacity = '0';
+                    });
+                    document.querySelectorAll('.faq-icon').forEach(i => i.style.transform = 'rotate(0deg)');
+                    if (!isOpen) {
+                        content.classList.add('active-faq');
+                        content.style.maxHeight = '300px';
+                        content.style.opacity = '1';
+                        icon.style.transform = 'rotate(45deg)';
+                    }
+                };
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+            // Hide Preloader
+            loader.classList.add('loaded');
+        }
+
+        // Run as soon as DOM is interactive
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            // Fallback: If assets take too long, hide loader anyway after 2.5s
+            setTimeout(initializeApp, 2500);
+        });
+
+        // Run on full window load
+        window.addEventListener('load', initializeApp);
+
+        const toggleBtn = document.getElementById('menu-toggle');
+        const mMenu = document.getElementById('mobile-menu');
+        toggleBtn.onclick = () => mMenu.classList.toggle('hidden');
+        document.querySelectorAll('.mobile-link').forEach(l => l.onclick = () => mMenu.classList.add('hidden'));
+
+        // Navbar visibility on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.remove('top-4');
+                nav.classList.add('top-0');
+            } else {
+                nav.classList.add('top-4');
+                nav.classList.remove('top-0');
+            }
+        });
+    </script>
+</body>
+</html>
